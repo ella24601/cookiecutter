@@ -170,7 +170,7 @@ def cookiecutter(
 
     logger.debug('context is %s', context)
 
-    # dumping the user input for the context
+    # dumping user input context
     context_input_file = os.path.join(output_dir, '.cookiecutter.json')
 
     if dump_input:
