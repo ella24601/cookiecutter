@@ -13,6 +13,7 @@ import sys
 from copy import copy
 from pathlib import Path
 from typing import Any
+import json
 
 from cookiecutter.config import get_user_config
 from cookiecutter.exceptions import InvalidModeException
@@ -41,6 +42,7 @@ def cookiecutter(
     skip_if_file_exists: bool = False,
     accept_hooks: bool = True,
     keep_project_on_failure: bool = False,
+    dump_input: bool = False,
 ) -> str:
     """
     Run Cookiecutter just as if using it from the command line.
@@ -165,6 +167,13 @@ def cookiecutter(
             )
 
     logger.debug('context is %s', context)
+
+    # dumping the user input for the context
+    context_input_file = os.path.join(output_dir, '.cookiecutter.json')
+
+    if dump_input:
+        with open(context_input_file, 'w') as file: json.dump(context['_cookiecutter'], file)
+        logger.debug(f'user input was dumped into {context_input_file}')
 
     # include template dir or url in the context dict
     context['cookiecutter']['_template'] = template
