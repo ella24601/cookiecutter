@@ -7,13 +7,13 @@ library rather than a script.
 
 from __future__ import annotations
 
+import json
 import logging
 import os
 import sys
 from copy import copy
 from pathlib import Path
 from typing import Any
-import json
 
 from cookiecutter.config import get_user_config
 from cookiecutter.exceptions import InvalidModeException
@@ -70,6 +70,7 @@ def cookiecutter(
     :param accept_hooks: Accept pre and post hooks if set to `True`.
     :param keep_project_on_failure: If `True` keep generated project directory even when
         generation fails
+    :param dump_input: If `True` dumps all user inputs to a file within the generated project.
     """
     if replay and ((no_input is not False) or (extra_context is not None)):
         err_msg = (
@@ -160,6 +161,7 @@ def cookiecutter(
                 skip_if_file_exists=skip_if_file_exists,
                 accept_hooks=accept_hooks,
                 keep_project_on_failure=keep_project_on_failure,
+                dump_input=dump_input,
             )
         if context_for_prompting['cookiecutter']:
             context['cookiecutter'].update(
@@ -172,7 +174,8 @@ def cookiecutter(
     context_input_file = os.path.join(output_dir, '.cookiecutter.json')
 
     if dump_input:
-        with open(context_input_file, 'w') as file: json.dump(context['_cookiecutter'], file)
+        with open(context_input_file, 'w') as file:
+            json.dump(context['cookiecutter'], file)
         logger.debug(f'user input was dumped into {context_input_file}')
 
     # include template dir or url in the context dict
