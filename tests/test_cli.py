@@ -725,3 +725,22 @@ def test_cli_with_pre_prompt_hook_fail(cli_runner, monkeypatch) -> None:
     assert result.exit_code == 1
     dir_name = 'inputfake-project'
     assert not Path(dir_name).exists()
+
+
+def test_cli_with_dump_input(tmpdir, cli_runner, monkeypatch) -> None:
+    """Test cli invocation with the --dump-input flag."""
+    template_path = 'tests/test-dump-input/'
+    output_dir = str(tmpdir.mkdir('output'))
+
+    monkeypatch.setattr(
+        'cookiecutter.prompt.read_user_variable',
+        lambda _var, default, _prompts, _prefix: default,     # set default user input
+    )
+
+    cli_runner(template_path, '--dump-input', '--output-dir', output_dir)
+    dumped_file = Path(output_dir) / '.cookiecutter.json'
+
+    assert dumped_file.exists()
+    with open(dumped_file, 'r') as file: dumped_content = json.load(file)
+    assert dumped_content == {"test_name": "test", "folder_name": "folder", "filename": "file"}
+
