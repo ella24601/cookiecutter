@@ -732,9 +732,10 @@ def test_cli_with_dump_input(tmpdir, cli_runner, monkeypatch) -> None:
     template_path = 'tests/test-dump-input/'
     output_dir = str(tmpdir.mkdir('output'))
 
+    user_inputs = iter(['A', 'B', 'C'])
     monkeypatch.setattr(
         'cookiecutter.prompt.read_user_variable',
-        lambda _var, default, _prompts, _prefix: default,     # set default user input
+        lambda _var, default, _prompts, _prefix: next(user_inputs),     # mock user input
     )
 
     cli_runner(template_path, '--dump-input', '--output-dir', output_dir)
@@ -742,5 +743,5 @@ def test_cli_with_dump_input(tmpdir, cli_runner, monkeypatch) -> None:
 
     assert dumped_file.exists()
     with open(dumped_file, 'r') as file: dumped_content = json.load(file)
-    assert dumped_content == {"test_name": "test", "folder_name": "folder", "filename": "file"}
+    assert dumped_content == {"test_name": "A", "folder_name": "B", "filename": "C"}
 
